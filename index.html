@@ -34,7 +34,29 @@
 </head>
 <body class="font-body bg-white text-gray-800 antialiased">
 <!-- Sticky CTA for mobile -->
-<div id="sticky-cta" class="fixed inset-x-0 bottom-0 z-50 md:hidden bg-white/90 backdrop-blur border-t hidden">
+<div 
+  <nav class="bg-white shadow sticky top-0 z-50 py-4">
+  <div class="container mx-auto max-w-5xl px-4  flexflex items-center justify-between">
+    <a href="#" class="font-display text-primary text-2xl">Sesiones Navideñas</a>
+    <ul class="hidden md:flex space-x-6">
+      <li><a href="#que-incluye" class="text-gray-700 hover:text-primary">¿Qué incluye?</a></li>
+      <li><a href="#como-funciona" class="text-gray-700 hover:text-primary">¿Cómo funciona?</a></li>
+      <li><a href="#testimonios" class="text-gray-700 hover:text-primary">Testimonios</a></li>
+      <li><a href="#faq" class="text-gray-700 hover:text-primary">FAQ</a></li>
+    </ul>
+    <a href="#reserva" class="hidden md:inline-block bg-primary text-white px-4 py-2 rounded-lg shadow">
+      Apartar lugar
+    </a>
+    <button id="menu-btn" class="md:hidden focus:outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none"
+        viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </div>
+</nav>
+id="sticky-cta" class="fixed inset-x-0 bottom-0 z-50 md:hidden bg-white/90 backdrop-blur border-t hidden">
   <div class="mx-auto max-w-screen-sm px-4 py-3 flex items-center justify-between gap-3">
     <div class="text-sm">
       <div class="font-medium">Preventa $1,900 MXN</div>
