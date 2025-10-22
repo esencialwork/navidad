@@ -1,18 +1,287 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sesiones Navideñas</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  </head>
-  <body class="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
-    <div id="root"></div>
-    <script type="module" src="./src/main.jsx"></script>
-      
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sesiones Navideñas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind custom configuration for colors and fonts
+    tailwind.config = {
+      theme: {
+        fontFamily: {
+          display: ['Pacifico', 'cursive'],
+          heading: ['Playfair Display', 'serif'],
+          body: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        extend: {
+          colors: {
+            primary: '#D73D3D',
+            'primary-dark': '#B72B2B',
+            secondary: '#f5f7fa',
+            muted: '#F6F7F9',
+            'brand-gold': '#D4AF37',
+            'brand-cream': '#FFF8F4',
+            'brand-success': '#0B6F43',
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-body bg-white text-gray-800 antialiased">
+<!-- Sticky CTA for mobile -->
+<div id="sticky-cta" class="fixed inset-x-0 bottom-0 z-50 md:hidden bg-white/90 backdrop-blur border-t hidden">
+  <div class="mx-auto max-w-screen-sm px-4 py-3 flex items-center justify-between gap-3">
+    <div class="text-sm">
+      <div class="font-medium">Preventa $1,900 MXN</div>
+      <div class="text-gray-500 text-xs">Cupos limitados</div>
+    </div>
+    <a href="#reserva" class="inline-flex items-center rounded-lg px-4 py-2 bg-primary text-white">Reservar ahora</a>
+  </div>
+</div>
+
+<header class="bg-primary text-white py-6">
+  <div class="container mx-auto max-w-5xl px-4 flex flex-col md:flex-row items-center md:justify-between gap-6">
+    <div class="md:w-1/2">
+      <h1 class="font-heading text-4xl md:text-5xl mb-4">Sesiones Fotográficas Navideñas</h1>
+      <p class="text-lg mb-6">20–25 min · 8 fotos editadas · entrega en 7 días. Preventa <span class="font-bold">$1,900</span> (precio regular $2,200).</p>
+      <a href="#reserva" class="inline-block bg-white text-primary font-medium px-6 py-3 rounded-lg shadow-lg">Apartar mi lugar por $1,900</a>
+      <p class="mt-2 text-sm italic">Cupos limitados — fines de semana de noviembre y diciembre</p>
+    </div>
+    <div class="md:w-1/2">
+      <img src="https://images.unsplash.com/photo-1608889174669-f432efb03f2c?auto=format&fit=crop&w=800&q=80" alt="Familia Navideña" class="rounded-lg shadow-lg">
+    </div>
+  </div>
+</header>
+
+<main class="py-12">
+  <div class="container mx-auto max-w-5xl px-4">
+    <!-- ¿Qué incluye? -->
+    <section class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">¿Qué incluye?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Clock Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8V4m0 0a4 4 0 014 4v4m-4-4a4 4 0 00-4 4v4m8 0a4 4 0 00-4-4H8a4 4 0 00-4 4v4m0-4a4 4 0 014-4h4" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">Sesión 20–25 min</h3>
+          <p class="text-sm text-gray-600">Tiempo exclusivo por familia en un set auténtico navideño.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Camera Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h4l3 5m0 0l3-5m-3 5l3 5H3" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">8 fotos digitales</h3>
+          <p class="text-sm text-gray-600">Ocho fotografías editadas profesionalmente en alta resolución.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Image Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m4 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">Galería privada</h3>
+          <p class="text-sm text-gray-600">Elige tus favoritas en línea desde la comodidad de tu casa.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Check Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">Entrega rápida</h3>
+          <p class="text-sm text-gray-600">Selección en 48–72 h y galería final en máximo 7 días.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ¿Cómo funciona? -->
+    <section class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">¿Cómo funciona?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Calendar Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">1) Elige tu horario</h3>
+          <p class="text-sm text-gray-600">Selecciona el slot que mejor se ajuste a tu agenda.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Credit Card Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.105 0-2 .672-2 1.5v6c0 .828.895 1.5 2 1.5s2-.672 2-1.5v-6c0-.828-.895-1.5-2-1.5zM6 14v1.5c0 .828.895 1.5 2 1.5s2-.672 2-1.5V14M14 14v1.5c0 .828.895 1.5 2 1.5s2-.672 2-1.5V14" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">2) Paga $1,900</h3>
+          <p class="text-sm text-gray-600">Pago completo para asegurar el lugar y evitar no-shows.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <div class="text-primary mb-3">
+            <!-- Check Circle Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2l4-4m5 2a7.5 7.5 0 11-15 0a7.5 7.5 0 0115 0z" /></svg>
+          </div>
+          <h3 class="font-medium mb-2">3) Confirma y prepara</h3>
+          <p class="text-sm text-gray-600">Recibe guía de vestuario, mapa y recordatorios.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Paquete de preventa -->
+    <section class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">Paquete único de preventa</h2>
+      <div class="max-w-md mx-auto p-6 bg-white border-2 border-primary rounded-xl text-center shadow">
+        <div class="flex items-baseline justify-center gap-2 mb-4">
+          <span class="text-4xl font-bold">$1,900</span>
+          <span class="text-sm">MXN / sesión</span>
+        </div>
+        <ul class="text-left space-y-2 mb-6">
+          <li class="flex items-start gap-2"><span class="text-primary">✓</span> 20–25 min</li>
+          <li class="flex items-start gap-2"><span class="text-primary">✓</span> 8 fotos finales editadas</li>
+          <li class="flex items-start gap-2"><span class="text-primary">✓</span> Galería privada</li>
+          <li class="flex items-start gap-2"><span class="text-primary">✓</span> Set navideño real</li>
+          <li class="flex items-start gap-2"><span class="text-primary">✓</span> Entrega en 7 días</li>
+        </ul>
+        <a href="#reserva" class="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium shadow">Apartar mi lugar por $1,900</a>
+        <p class="text-sm text-gray-600 mt-3 italic">Al terminar la preventa, el precio sube a $2,200.</p>
+      </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">Opiniones de clientes</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+          <p class="italic mb-4">“Increíble experiencia, súper pacientes con los niños.”</p>
+          <p class="font-medium text-gray-700">— Carolina R.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+          <p class="italic mb-4">“Las fotos más lindas de nuestra Navidad. Volveremos.”</p>
+          <p class="font-medium text-gray-700">— Familia López</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow">
+          <p class="italic mb-4">“Calidad impecable y trato excelente. 10/10.”</p>
+          <p class="font-medium text-gray-700">— Rosa M.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Políticas -->
+    <section class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">Garantías y políticas</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <h3 class="font-medium mb-2">Reagendación sin costo</h3>
+          <p class="text-sm text-gray-600">Hasta 72 h antes de la sesión.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <h3 class="font-medium mb-2">Puntualidad</h3>
+          <p class="text-sm text-gray-600">Tolerancia 10 min; después se pierde el slot.</p>
+        </div>
+        <div class="p-6 bg-white shadow rounded-lg text-center">
+          <h3 class="font-medium mb-2">Cancelación por estudio</h3>
+          <p class="text-sm text-gray-600">Reembolso íntegro por fuerza mayor.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">Preguntas frecuentes</h2>
+      <div class="space-y-4">
+        <details class="p-4 bg-white rounded-lg shadow">
+          <summary class="cursor-pointer font-medium">¿Cuántas personas por sesión?</summary>
+          <p class="mt-2 text-gray-600">Una familia o núcleo. Consulta costo por personas extra.</p>
+        </details>
+        <details class="p-4 bg-white rounded-lg shadow">
+          <summary class="cursor-pointer font-medium">¿Puedo comprar fotos adicionales?</summary>
+          <p class="mt-2 text-gray-600">Sí: +5 por $600 MXN o +10 por $1,000 MXN.</p>
+        </details>
+        <details class="p-4 bg-white rounded-lg shadow">
+          <summary class="cursor-pointer font-medium">¿Se permiten mascotas?</summary>
+          <p class="mt-2 text-gray-600">Sí, siempre que estén controladas y limpias.</p>
+        </details>
+        <details class="p-4 bg-white rounded-lg shadow">
+          <summary class="cursor-pointer font-medium">¿Incluye impresiones?</summary>
+          <p class="mt-2 text-gray-600">No. Puedes adquirir impresiones y mini-álbum como extra.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- Reserva tu lugar -->
+    <section id="reserva" class="mb-12">
+      <h2 class="font-heading text-3xl mb-8 text-center">Reserva tu lugar</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-white rounded-lg shadow">
+          <h3 class="font-medium mb-4">Selecciona tu horario</h3>
+          <p class="text-gray-600 mb-4 text-sm">Calendario interactivo (integra tu sistema de citas).</p>
+          <div class="h-52 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg text-gray-400">
+            Calendario aquí
+          </div>
+          <ul class="mt-4 text-sm text-gray-600 list-disc list-inside space-y-1">
+            <li>Sesiones disponibles de lunes a domingo</li>
+            <li>Horario de 9:00 AM a 6:00 PM</li>
+            <li>Cupo limitado por día</li>
+          </ul>
+        </div>
+        <div class="p-6 bg-white rounded-lg shadow">
+          <form class="space-y-4">
+            <div>
+              <label for="nombre" class="block font-medium">Nombre completo</label>
+              <input id="nombre" type="text" class="mt-1 w-full border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" required>
+            </div>
+            <div>
+              <label for="correo" class="block font-medium">Correo</label>
+              <input id="correo" type="email" class="mt-1 w-full border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" required>
+            </div>
+            <div>
+              <label for="whatsapp" class="block font-medium">WhatsApp</label>
+              <input id="whatsapp" type="tel" placeholder="+52 55 1234 5678" pattern="^\\+?\\d[\\d\\s]{7,}$" class="mt-1 w-full border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" required>
+              <p class="text-xs text-gray-500 mt-1">Incluye lada. Ej: +52 55 1234 5678</p>
+            </div>
+            <div>
+              <label for="descripcion" class="block font-medium">Notas / descripción (opcional)</label>
+              <textarea id="descripcion" class="mt-1 w-full border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" rows="3"></textarea>
+            </div>
+            <div class="flex items-start gap-2">
+              <input id="acepto" type="checkbox" required class="mt-1 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+              <label for="acepto" class="text-sm">Acepto la <a href="#politicas" class="underline">política de reservas</a>.</label>
+            </div>
+            <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary-dark">Pagar y confirmar</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-primary text-white py-8">
+  <div class="container mx-auto max-w-5xl px-4 text-center">
+    <h3 class="font-display text-2xl mb-2">Sesiones Navideñas</h3>
+    <p class="mb-4">Capturamos los mejores momentos navideños</p>
+    <nav class="space-x-4 text-sm">
+      <a href="#" class="hover:underline">Qué incluye</a>
+      <a href="#" class="hover:underline">Cómo funciona</a>
+      <a href="#reserva" class="hover:underline">FAQ</a>
+    </nav>
+    <p class="mt-4 text-xs">&copy; 2025 Sesiones Navideñas. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script>
+// Mostrar/ocultar CTA pegajosa en mobile
+function handleScroll() {
+  const cta = document.getElementById('sticky-cta');
+  if (window.scrollY > 400) {
+    cta.classList.remove('hidden');
+  } else {
+    cta.classList.add('hidden');
+  }
+}
+window.addEventListener('scroll', handleScroll);
+</script>
+</body>
 </html>
