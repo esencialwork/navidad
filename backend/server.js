@@ -29,13 +29,30 @@ const BUFFER_MINUTES = Number(process.env.BUFFER_MINUTES || 5);
 let oauth2Client;
 let token;
 
+function normalizeOrigin(origin) {
+  if (!origin) {
+    return '';
+  }
+  try {
+    const url = new URL(origin);
+    return url.origin;
+  } catch {
+    return origin.replace(/\/$/, '');
+  }
+}
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+  ? process.env.ALLOWED_ORIGINS.split(',')
+    .map((origin) => normalizeOrigin(origin.trim()))
+    .filter(Boolean)
   : [];
+
+console.log('Allowed origins:', allowedOrigins.length > 0 ? allowedOrigins.join(', ') : 'ALL');
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+    const normalizedOrigin = normalizeOrigin(origin);
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes('*') || allowedOrigins.includes(normalizedOrigin)) {
       return callback(null, true);
     }
     console.warn(`Blocked by CORS: ${origin}`);
