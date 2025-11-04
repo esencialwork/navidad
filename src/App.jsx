@@ -22,6 +22,17 @@ import {
   Timer,
   ShieldCheck
 } from 'lucide-react';
+import {
+  CAMPAIGN_NAME,
+  CAMPAIGN_ALT_NAME,
+  CAMPAIGN_PRICE,
+  REGULAR_PRICE,
+  CAMPAIGN_DEADLINE,
+  CAMPAIGN_TIMEZONE,
+  CAMPAIGN_TIMEZONE_LABEL,
+  CAMPAIGN_COUNTDOWN_LABEL,
+  isCampaignActive
+} from './config/campaign.js';
 
 export default function App() {
   // Section anchors shared across navigation and content blocks
@@ -32,6 +43,16 @@ export default function App() {
     faq: 'faq',
     reservation: 'reserva'
   };
+
+  const campaignActive = isCampaignActive();
+  const effectiveCampaignName = CAMPAIGN_NAME;
+  const priceLabel = `$${CAMPAIGN_PRICE.toLocaleString('es-MX')} MXN`;
+  const regularPriceLabel = `$${REGULAR_PRICE.toLocaleString('es-MX')} MXN`;
+  const navLabel = campaignActive
+    ? `🎄 ${CAMPAIGN_NAME} — Cupos limitados — ${priceLabel}`
+    : '🎄 Promoción finalizada — Consulta nuevas fechas';
+
+  const legalText = 'Vigencia: precio promocional de $2,500 MXN válido solo para reservas confirmadas antes del cierre de nuestra campaña especial de noviembre. No acumulable con otras promociones. Aplica a sesiones navideñas 2025 en Querétaro. Sujeto a disponibilidad.';
 
   // Content definitions
   const incluyeFeatures = [
@@ -65,8 +86,10 @@ export default function App() {
     },
     {
       icon: CreditCard,
-      title: '2) Paga $1,900',
-      text: 'Pago completo para asegurar el lugar y evitar no‑shows.'
+      title: '2) Confirma con pago seguro',
+      text: campaignActive
+        ? `Asegura tu sesión con el precio especial de ${priceLabel}.`
+        : `Reserva con el precio regular de ${regularPriceLabel}.`
     },
     {
       icon: CheckCircle,
@@ -124,24 +147,61 @@ export default function App() {
     {
       q: '¿Incluye impresiones?',
       a: 'No. Puedes adquirir impresiones y mini-álbum como extra.'
+    },
+    {
+      q: '¿Hasta cuándo aplica el precio?',
+      a: 'Hasta el cierre de nuestra campaña especial de noviembre (23:59 h, hora de Querétaro).'
     }
   ];
 
   return (
     <div className="relative bg-white dark:bg-neutral-900">
-      <TopBanner />
-      <NavBar sectionIds={sectionIds} />
-      <Hero ctaTarget={`#${sectionIds.reservation}`} />
+      <TopBanner
+        isCampaignActive={campaignActive}
+        campaignPrice={CAMPAIGN_PRICE}
+        regularPrice={REGULAR_PRICE}
+        campaignName={CAMPAIGN_NAME}
+        ctaTarget={`#${sectionIds.reservation}`}
+      />
+      <NavBar
+        sectionIds={sectionIds}
+        campaignLabel={navLabel}
+        ctaLabel={campaignActive ? `Apartar mi lugar por ${priceLabel}` : 'Reservar mi sesión'}
+        ctaTarget={`#${sectionIds.reservation}`}
+      />
+      <Hero
+        ctaTarget={`#${sectionIds.reservation}`}
+        campaignName={effectiveCampaignName}
+        campaignPrice={CAMPAIGN_PRICE}
+        regularPrice={REGULAR_PRICE}
+        deadline={CAMPAIGN_DEADLINE}
+        countdownLabel={CAMPAIGN_COUNTDOWN_LABEL}
+        timeZoneLabel={CAMPAIGN_TIMEZONE_LABEL}
+        isCampaignActive={campaignActive}
+      />
       <MemoryGallery />
       <FeatureCards title="¿Qué incluye?" features={incluyeFeatures} columns={4} sectionId={sectionIds.includes} />
       <FeatureCards title="¿Cómo funciona?" features={comoFuncionaFeatures} columns={3} sectionId={sectionIds.how} />
-      <PricingSection />
+      <PricingSection
+        isCampaignActive={campaignActive}
+        campaignName={effectiveCampaignName}
+        campaignPrice={CAMPAIGN_PRICE}
+        regularPrice={REGULAR_PRICE}
+        legalText={legalText}
+        ctaTarget={`#${sectionIds.reservation}`}
+      />
       <Testimonials testimonials={testimonials} sectionId={sectionIds.testimonials} />
       <FeatureCards title="Garantías y políticas" features={politicasFeatures} columns={3} sectionId="garantias-politicas" />
       <FAQSection items={faqItems} sectionId={sectionIds.faq} />
       <ReservationForm sectionId={sectionIds.reservation} />
       <Footer sectionIds={sectionIds} />
-      <StickyCta ctaTarget={`#${sectionIds.reservation}`} />
+      <StickyCta
+        ctaTarget={`#${sectionIds.reservation}`}
+        isCampaignActive={campaignActive}
+        campaignName={CAMPAIGN_NAME}
+        campaignPrice={CAMPAIGN_PRICE}
+        regularPrice={REGULAR_PRICE}
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 /**
  * Navigation bar with brand and anchor links.
  */
-export default function NavBar({ sectionIds = {} }) {
+export default function NavBar({ sectionIds = {}, campaignLabel, ctaLabel = 'Apartar mi lugar', ctaTarget = '#reserva' }) {
   const {
     includes = 'que-incluye',
     how = 'como-funciona',
@@ -17,9 +17,16 @@ export default function NavBar({ sectionIds = {} }) {
   return (
     <header className="bg-white/90 backdrop-blur fixed top-0 inset-x-0 z-40 border-b border-neutral-200 dark:bg-neutral-900/70 dark:border-neutral-800">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
-        <a href="#hero" className="flex items-center font-display text-2xl text-primary">
-          Sesiones Navideñas
-        </a>
+        <div className="flex flex-col">
+          <a href="#hero" className="font-display text-2xl text-primary">
+            Sesiones Navideñas
+          </a>
+          {campaignLabel ? (
+            <span className="text-xs text-neutral-600 dark:text-neutral-300 mt-0.5 max-w-xs">
+              {campaignLabel}
+            </span>
+          ) : null}
+        </div>
 
         <nav className="hidden md:flex gap-6 font-medium text-sm">
           <a href={`#${includes}`} className="hover:text-primary">Qué incluye</a>
@@ -27,8 +34,8 @@ export default function NavBar({ sectionIds = {} }) {
           <a href={`#${testimonials}`} className="hover:text-primary">Testimonios</a>
           <a href={`#${faq}`} className="hover:text-primary">FAQ</a>
           <a href="/aviso-de-privacidad" className="hover:text-primary">Aviso de privacidad</a>
-          <a href={`#${reservation}`} className="ml-4 inline-flex items-center bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors">
-            Apartar mi lugar
+          <a href={ctaTarget} className="ml-4 inline-flex items-center bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors">
+            {ctaLabel}
           </a>
         </nav>
 
@@ -68,8 +75,8 @@ export default function NavBar({ sectionIds = {} }) {
             <a href={`#${testimonials}`} className="block hover:text-primary" onClick={() => setIsOpen(false)}>Testimonios</a>
             <a href={`#${faq}`} className="block hover:text-primary" onClick={() => setIsOpen(false)}>FAQ</a>
             <a href="/aviso-de-privacidad" className="block hover:text-primary" onClick={() => setIsOpen(false)}>Aviso de privacidad</a>
-            <a href={`#${reservation}`} className="block mt-2 bg-primary text-white text-center px-4 py-2 rounded-md hover:bg-primary-dark" onClick={() => setIsOpen(false)}>
-              Apartar mi lugar
+            <a href={ctaTarget} className="block mt-2 bg-primary text-white text-center px-4 py-2 rounded-md hover:bg-primary-dark" onClick={() => setIsOpen(false)}>
+              {ctaLabel}
             </a>
           </div>
         </div>
