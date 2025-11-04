@@ -1,6 +1,6 @@
 import React from 'react';
 import Countdown from './Countdown.jsx';
-import heroImage from '../assets/set_navidad.jpeg';
+import heroImage from '../assets/navidad_hero.jpg';
 
 /**
  * The hero section introduces the offer and includes a countdown timer.
