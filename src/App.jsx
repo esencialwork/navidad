@@ -10,6 +10,7 @@ import ReservationForm from './components/ReservationForm.jsx';
 import MemoryGallery from './components/MemoryGallery.jsx';
 import Footer from './components/Footer.jsx';
 import StickyCta from './components/StickyCta.jsx';
+import Snowfall from './components/Snowfall.jsx';
 import {
   Clock,
   Camera,
@@ -156,6 +157,7 @@ export default function App() {
 
   return (
     <div className="relative bg-white dark:bg-neutral-900">
+      <Snowfall />
       <TopBanner
         isCampaignActive={campaignActive}
         campaignPrice={CAMPAIGN_PRICE}
