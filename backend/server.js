@@ -66,10 +66,16 @@ console.log(`Credentials path: ${CREDENTIALS_PATH}`);
 console.log(`Token path: ${TOKEN_PATH}`);
 
 function loadCredentials() {
-  console.log('Reading credentials file...');
-  const content = fs.readFileSync(CREDENTIALS_PATH, 'utf8');
-  console.log('Credentials file read successfully');
-  const config = JSON.parse(content);
+  let config;
+  if (process.env.GOOGLE_CREDENTIALS_JSON) {
+    console.log('Loading credentials from environment variable GOOGLE_CREDENTIALS_JSON');
+    config = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+  } else {
+    console.log('Reading credentials file...');
+    const content = fs.readFileSync(CREDENTIALS_PATH, 'utf8');
+    console.log('Credentials file read successfully');
+    config = JSON.parse(content);
+  }
   const webCredentials = config.web;
   if (!webCredentials) {
     throw new Error('Archivo de credenciales inválido: falta la propiedad "web".');
@@ -94,6 +100,17 @@ function loadCredentials() {
 }
 
 function loadTokenFromDisk() {
+  if (process.env.GOOGLE_TOKEN_JSON) {
+    try {
+      const storedToken = JSON.parse(process.env.GOOGLE_TOKEN_JSON);
+      oauth2Client.setCredentials(storedToken);
+      token = storedToken;
+      console.log('Token loaded from GOOGLE_TOKEN_JSON environment variable');
+      return;
+    } catch (error) {
+      console.warn('Failed to parse GOOGLE_TOKEN_JSON. Falling back to token.json if available.', error);
+    }
+  }
   if (fs.existsSync(TOKEN_PATH)) {
     try {
       const storedToken = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf8'));
@@ -111,6 +128,9 @@ function loadTokenFromDisk() {
 function saveTokenToDisk(tokens) {
   fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens, null, 2), 'utf8');
   console.log('Token saved to disk');
+  if (process.env.GOOGLE_TOKEN_JSON) {
+    console.log('Actualiza GOOGLE_TOKEN_JSON en tu entorno con el nuevo contenido de token.json si quieres persistirlo.');
+  }
 }
 
 function isAuthorized() {
