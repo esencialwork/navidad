@@ -6,13 +6,13 @@ El objetivo es implementar un sistema de reservas para un sitio web de sesiones 
 
 ## Estado Actual
 
-La lógica de reservas ahora vive directamente en funciones serverless dentro del directorio `api/` (compatibles con Vercel). Cada función usa una **service account** de Google para interactuar con el calendario sin necesidad de flujos OAuth interactivos.
+La lógica de reservas vive en funciones serverless dentro del directorio `api/`, ejecutadas en Vercel. Estas funciones usan **OAuth2 con refresh token** para actuar como la cuenta de Gmail del cliente y crear eventos con invitaciones.
 
-- `api/status.js` confirma que la cuenta de servicio puede autenticarse y expone parámetros básicos del calendario.
-- `api/availability.js` genera los slots disponibles para la fecha solicitada y filtra los horarios ocupados con buffers configurables.
-- `api/reservations.js` valida el formulario, comprueba conflictos y crea el evento en Google Calendar enviando invitaciones al cliente.
+- `api/status.js` valida que las credenciales OAuth sean válidas y expone la configuración del calendario.
+- `api/availability.js` genera los slots disponibles y respeta buffers configurable.
+- `api/reservations.js` valida el formulario, detecta conflictos y crea el evento en Google Calendar (enviando la invitación al asistente).
 
-El frontend (`src/components/ReservationForm.jsx`) consume estos endpoints a través de `src/lib/api.js`, que ahora apunta por defecto a `/api`.
+El frontend (`src/components/ReservationForm.jsx`) consume estos endpoints mediante `src/lib/api.js`, que apunta a `/api`.
 
 ## Último Error Encontrado
 
@@ -20,10 +20,10 @@ Se verificó que la aplicación frontend ahora se monta correctamente con React 
 
 ## Próximos Pasos
 
-1.  **Cargar la service account en Vercel:** Pegar `GOOGLE_SERVICE_ACCOUNT_JSON` y compartir el calendario con ese correo para habilitar la escritura de eventos.
+1.  **Cargar las credenciales OAuth en Vercel:** `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y el `GOOGLE_REFRESH_TOKEN` obtenido con el script auxiliar.
 
-2.  **Ajustar variables de entorno opcionales:** `CALENDAR_ID`, horarios y buffers según la agenda real.
+2.  **Configurar variables opcionales:** `CALENDAR_ID`, horarios y buffers según la agenda real (si usas un calendario distinto al `primary`, asegúrate de que la cuenta autorizada tenga permisos para editarlo).
 
 3.  **Validaciones extra (opcional):** Captcha, pagos o recordatorios adicionales.
 
-4.  **Monitorear errores:** Revisar los logs de Vercel ante conflictos o respuestas 503 para asegurarse de que la cuenta de servicio mantiene los permisos.
+4.  **Monitorear errores:** Revisar los logs de Vercel ante conflictos o respuestas 403/503 para rotar el refresh token si se revoca el acceso.

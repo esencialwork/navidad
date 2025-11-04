@@ -9,58 +9,48 @@ const START_HOUR = Number(process.env.START_HOUR || 9);
 const END_HOUR = Number(process.env.END_HOUR || 18);
 const BUFFER_MINUTES = Number(process.env.BUFFER_MINUTES || 5);
 
-let cachedClient;
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
+
+let oauthClient;
 let authorized = false;
 
-function loadServiceAccount() {
-  if (cachedClient) {
-    return cachedClient;
+function getOAuthClient() {
+  if (!CLIENT_ID || !CLIENT_SECRET || !REFRESH_TOKEN) {
+    throw new Error('Define GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET y GOOGLE_REFRESH_TOKEN en las variables de entorno.');
   }
-  const json = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (!json) {
-    throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON no está definido. Añade el JSON de tu service account a las variables de entorno de Vercel.');
+  if (!oauthClient) {
+    oauthClient = new google.auth.OAuth2({
+      clientId: CLIENT_ID,
+      clientSecret: CLIENT_SECRET
+    });
+    oauthClient.setCredentials({ refresh_token: REFRESH_TOKEN });
   }
-
-  let config;
-  try {
-    config = JSON.parse(json);
-  } catch (error) {
-    throw new Error(`GOOGLE_SERVICE_ACCOUNT_JSON inválido: ${error.message}`);
-  }
-
-  const { client_email: clientEmail, private_key: privateKey } = config;
-  if (!clientEmail || !privateKey) {
-    throw new Error('El JSON de la service account debe incluir client_email y private_key.');
-  }
-
-  const formattedKey = privateKey.includes('\\n') ? privateKey.replace(/\\n/g, '\n') : privateKey;
-
-  cachedClient = new google.auth.JWT({
-    email: clientEmail,
-    key: formattedKey,
-    scopes: SCOPES,
-    subject: process.env.GOOGLE_IMPERSONATED_USER || undefined
-  });
-
-  return cachedClient;
+  return oauthClient;
 }
 
 async function ensureAuthorized() {
-  const client = loadServiceAccount();
-  if (authorized) {
-    return client;
+  const client = getOAuthClient();
+  try {
+    await client.getAccessToken();
+    authorized = true;
+  } catch (error) {
+    authorized = false;
+    throw error;
   }
-  await client.authorize();
-  authorized = true;
   return client;
 }
 
 function resetAuth() {
   authorized = false;
+  if (oauthClient) {
+    oauthClient.setCredentials({ refresh_token: REFRESH_TOKEN });
+  }
 }
 
 function getCalendarClient() {
-  const auth = loadServiceAccount();
+  const auth = getOAuthClient();
   return google.calendar({ version: 'v3', auth });
 }
 

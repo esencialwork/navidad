@@ -22,13 +22,13 @@ module.exports = async function handler(req, res) {
       slotDurationMinutes: SLOT_DURATION_MINUTES,
       startHour: START_HOUR,
       endHour: END_HOUR,
-      usingServiceAccount: true
+      authMethod: 'oauth2_refresh_token'
     });
   } catch (error) {
     console.error('Status check failed', error);
     res.status(503).json({
       authorized: false,
-      error: 'No se pudo autorizar la service account. Verifica GOOGLE_SERVICE_ACCOUNT_JSON y los permisos del calendario.'
+      error: 'No se pudo autorizar con Google. Revisa GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN.'
     });
   }
 };

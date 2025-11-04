@@ -1,34 +1,39 @@
-# Integración con Google Calendar (Service Account)
+# Integración con Google Calendar (OAuth con refresh token)
 
-Sigue estos pasos para que la landing cree reservas directamente en tu calendario:
+Sigue estos pasos para que la landing cree reservas en tu calendario y envíe invitaciones desde tu cuenta de Gmail.
 
-1. **Proyecto en Google Cloud**
-   - Ve a [Google Cloud Console](https://console.cloud.google.com/), crea/selecciona un proyecto y habilita la API de Google Calendar.
+1. **Habilita la API**
+   - Ve a [Google Cloud Console](https://console.cloud.google.com/), selecciona tu proyecto o crea uno nuevo.
+   - Habilita la Google Calendar API en “APIs & Services → Library”.
 
-2. **Service account**
-   - Navega a *IAM y administración → Cuentas de servicio*.
-   - Crea una cuenta (ej. `calendar-reservas`).
-   - En la pestaña *Claves*, genera una nueva clave JSON y descárgala.
+2. **Crea un OAuth Client (tipo Web)**
+   - “APIs & Services → Credentials → Create credentials → OAuth client ID”.
+   - Tipo “Web application”.
+   - Añade `http://localhost:3000/oauth2callback` como redirect URI (sirve para el script local).
+   - Guarda `client_id` y `client_secret`.
 
-3. **Comparte tu calendario**
-   - Abre Google Calendar con la cuenta propietaria del calendario.
-   - Ajustes → Configuración de mis calendarios → selecciona el calendario.
-   - En *Compartir con personas específicas* agrega el correo de la service account con permiso "Hacer cambios y administrar uso compartido".
+3. **Obtén el refresh token**
+   - En tu terminal:
+     ```bash
+     GOOGLE_CLIENT_ID=tu_client_id GOOGLE_CLIENT_SECRET=tu_client_secret npm run get-refresh-token
+     ```
+   - Autoriza la app en el navegador. El script mostrará el `refresh_token` (cópialo).
 
-4. **Variables de entorno (Vercel)**
-   - En el proyecto de Vercel ve a *Settings → Environment Variables*.
-   - Crea:
-     - `GOOGLE_SERVICE_ACCOUNT_JSON` (pega el JSON completo; respeta `\n` en la clave privada).
-     - `CALENDAR_ID` (`primary` o el ID del calendario compartido).
-     - `TIMEZONE`, `START_HOUR`, `END_HOUR`, `SLOT_DURATION_MINUTES`, `BUFFER_MINUTES` si quieres personalizar defaults.
-     - `VITE_API_URL=/api` (el valor por defecto del repositorio ya apunta ahí).
-     - Opcional: `GOOGLE_IMPERSONATED_USER` si usas Google Workspace y quieres delegar en un usuario en lugar de la cuenta de servicio.
+4. **Configura las variables en Vercel**
+   - En tu proyecto, ve a “Settings → Environment Variables”.
+   - Agrega:
+     - `GOOGLE_CLIENT_ID`
+     - `GOOGLE_CLIENT_SECRET`
+     - `GOOGLE_REFRESH_TOKEN`
+     - `CALENDAR_ID` (`primary` o el ID del calendario al que quieras escribir)
+     - Opcionales: `TIMEZONE`, `START_HOUR`, `END_HOUR`, `SLOT_DURATION_MINUTES`, `BUFFER_MINUTES`
+     - `VITE_API_URL=/api` (si deseas forzarlo; el repo ya lo usa por defecto).
 
 5. **Redeploy**
-   - Realiza un nuevo deploy en Vercel. Las funciones en `api/` leerán esas variables y crearán eventos en Google Calendar.
+   - Lanza un nuevo deploy en Vercel para que las funciones lean las variables. Si usas un calendario distinto al `primary`, comprueba que la cuenta que autorizaste tenga permiso de edición sobre él.
 
 6. **Pruebas**
-   - Visita `/api/status` en tu dominio para confirmar `authorized: true`.
-   - Haz una reserva en la landing y verifica que aparezca en el calendario y se envíe la invitación al cliente.
+   - Abre `https://TU-DOMINIO/api/status` y confirma que `authorized` sea `true`.
+   - Realiza una reserva desde la landing. Debes ver el evento y la invitación en tu calendario.
 
-> Para desarrollo local instala la CLI de Vercel (`npm i -g vercel`), exporta las mismas variables y ejecuta `vercel dev` (sirve la landing y las funciones serverless simultáneamente).
+> En desarrollo local puedes usar `vercel dev` (tras instalar la CLI) y exportar las mismas variables antes de ejecutar.

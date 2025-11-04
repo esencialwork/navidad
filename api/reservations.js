@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     await ensureAuthorized();
   } catch (error) {
     console.error('Authorization error', error);
-    return res.status(503).json({ error: 'No se pudo autorizar la service account. Revisa GOOGLE_SERVICE_ACCOUNT_JSON.' });
+    return res.status(503).json({ error: 'No se pudo autorizar con Google. Revisa GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN.' });
   }
 
   let payload;
@@ -112,7 +112,7 @@ module.exports = async function handler(req, res) {
   } catch (error) {
     console.error('Error creating reservation', error);
     if (error?.response?.status === 403) {
-      return res.status(403).json({ error: 'La service account no tiene permisos para escribir en este calendario.' });
+      return res.status(403).json({ error: 'Google rechazó la creación del evento. Revisa permisos del calendario o el token OAuth.' });
     }
     res.status(500).json({ error: 'No se pudo crear la reservación. Intenta nuevamente.' });
   }

@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
     await ensureAuthorized();
   } catch (error) {
     console.error('Authorization error', error);
-    return res.status(503).json({ error: 'No se pudo autorizar la service account. Revisa GOOGLE_SERVICE_ACCOUNT_JSON.' });
+    return res.status(503).json({ error: 'No se pudo autorizar con Google. Revisa GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN.' });
   }
 
   const calendar = getCalendarClient();

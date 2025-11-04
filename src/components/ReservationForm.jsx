@@ -8,7 +8,7 @@ const initialFormState = {
   notes: '',
   marketingConsent: false
 };
-const PHONE_INPUT_PATTERN = '^\\+?[\\d\\s()-]{8,}$';
+const PHONE_INPUT_PATTERN = '^\\+?[\\d\\s()\\-]{8,}$';
 
 const getLocalISODate = (date = new Date()) => {
   const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);

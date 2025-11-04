@@ -35,24 +35,34 @@ Este repositorio contiene una landing page responsiva para promocionar sesiones 
 ### Variables de entorno del frontend
 
 1. Copia `.env.example` a `.env`.
-2. Ajusta `VITE_API_URL` para apuntar al backend (por defecto `http://localhost:3000/api`).
-3. Ajusta cualquier otra variable que necesites (por ejemplo, la URL base del backend si lo despliegas).
+2. `VITE_API_URL` apunta a `/api` por defecto; ajústalo solo si necesitas llamar a otro dominio.
+3. Ajusta cualquier otra variable que necesites (por ejemplo horarios o zona horaria).
 
 ### Backend (Google Calendar)
 
-El proyecto ya no necesita un backend separado: las funciones de reserva viven en `api/` y se ejecutan como Serverless Functions en Vercel.
+Las funciones serverless en `api/` utilizan OAuth2 con tu propia cuenta de Google. Necesitas un refresh token para que puedan crear eventos e invitar asistentes.
 
-1. **Crea una service account** (Google Cloud → IAM → Service Accounts) y descarga su JSON.
-2. **Comparte tu calendario** con el correo de la service account con permisos de “Hacer cambios y administrar uso compartido”.
-3. **Variables de entorno necesarias** (en Vercel → Settings → Environment Variables):
-   - `GOOGLE_SERVICE_ACCOUNT_JSON` – pega el JSON completo de la service account (respeta comillas y saltos con `\n`).
-   - `CALENDAR_ID` – ID del calendario destino (`primary` o el ID específico).
-   - `TIMEZONE`, `START_HOUR`, `END_HOUR`, `SLOT_DURATION_MINUTES`, `BUFFER_MINUTES` (opcional, tienen valores por defecto).
-   - `VITE_API_URL=/api` (o deja el valor por defecto del `.env.example`).
-   - Opcional: `GOOGLE_IMPERSONATED_USER` si quieres que la service account actúe como un usuario de Google Workspace.
-4. **Redeploy** en Vercel. Las rutas `/api/availability`, `/api/reservations` y `/api/status` se ejecutan con esas variables y crean eventos directamente en Google Calendar.
+1. **Crea un OAuth Client** en Google Cloud (APIs & Services → Credentials → *Create credentials* → *OAuth client ID* → *Web application*). Anota el `client_id` y `client_secret` y agrega `http://localhost:3000/oauth2callback` como redirect URI.
+2. **Obtén el refresh token** ejecutando el helper incluido:
 
-> Para probar en local usa `vercel dev` (requiere `npm i -g vercel`). Exporta las mismas variables de entorno antes de ejecutar.
+   ```bash
+   GOOGLE_CLIENT_ID=tu_client_id GOOGLE_CLIENT_SECRET=tu_client_secret npm run get-refresh-token
+   ```
+
+   Se abrirá el navegador. Autoriza la app y el script imprimirá el `refresh_token`.
+
+3. **Configura las variables en Vercel** (Settings → Environment Variables):
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_REFRESH_TOKEN`
+   - `CALENDAR_ID` (por ejemplo `primary`)
+   - Opcionales: `TIMEZONE`, `START_HOUR`, `END_HOUR`, `SLOT_DURATION_MINUTES`, `BUFFER_MINUTES`
+   - `VITE_API_URL=/api` (el valor por defecto en `.env.example` ya apunta ahí)
+
+4. **Redeploy** la app. Las rutas `/api/availability`, `/api/reservations` y `/api/status` quedarán activas y las reservas enviarán invitaciones desde tu cuenta de Gmail.
+   Si usas un calendario distinto al `primary`, asegúrate de que ese calendario pertenezca o esté compartido con la misma cuenta que autorizaste.
+
+> Para desarrollo local puedes usar `vercel dev` (requiere `npm i -g vercel`) o replicar las variables de entorno y consumir las funciones desplegadas.
 
 ## Personalización
 
