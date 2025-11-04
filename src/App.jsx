@@ -143,7 +143,7 @@ export default function App() {
     },
     {
       q: '¿Se permiten mascotas?',
-      a: 'Sí, siempre que estén controladas y limpias.'
+      a: '¡Por supuesto! somos totalmente Petfriendly 🐶 🐾 .'
     },
     {
       q: '¿Incluye impresiones?',
