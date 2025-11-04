@@ -12,8 +12,8 @@ export default function Hero({ ctaTarget = '#reserva' }) {
 
   return (
     <section className="pt-24 pb-16 bg-primary text-white" id="hero">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 grid md:grid-cols-2 gap-8 items-center">
-        <div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 grid md:grid-cols-2 gap-10 items-center">
+        <div className="order-2 md:order-1">
           <p className="text-sm uppercase tracking-wide mb-2">Preventa Navideña 2025</p>
           <h1 className="font-heading text-4xl sm:text-5xl mb-4">Sesiones Fotográficas Navideñas</h1>
           <p className="max-w-md text-base mb-6">Asegura tu sesión hoy por $1,900 MXN. Set real como en las fotos. Cupos limitados.</p>
@@ -27,13 +27,11 @@ export default function Hero({ ctaTarget = '#reserva' }) {
             <Countdown deadline={deadline} />
           </div>
         </div>
-        <div className="hidden md:block">
+        <div className="order-1 md:order-2">
           <img
             src={heroImage}
             alt="Familia posando en set navideño"
-            className="rounded-lg shadow-lg"
-            width="600"
-            height="400"
+            className="w-full h-full max-h-[480px] rounded-2xl shadow-xl object-cover"
           />
         </div>
       </div>
