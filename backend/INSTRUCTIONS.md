@@ -64,3 +64,43 @@ Sigue estos pasos para obtener las credenciales necesarias para conectar tu cale
 3.  Ejecuta `npm install` y `npm run dev` en la raíz para levantar la landing. El formulario de reservas ya consultará disponibilidad y creará eventos en tu Google Calendar.
 
 > Recuerda: `credentials.json` y `token.json` contienen datos sensibles. Mantén ambos fuera de tu repositorio público y gestiona las claves como secretos cuando despliegues el backend en producción.
+
+## 8. Despliegue en Google Cloud Run
+
+Si quieres que el backend esté disponible 24/7 sin depender de tu máquina local:
+
+1. **Autoriza y prepara los archivos**
+   - Ejecuta el backend en local y completa `/authorize` para generar `token.json`.
+   - Asegúrate de que `backend/credentials.json` y `backend/token.json` estén presentes antes de construir la imagen (se incluirán en el contenedor).
+   - Actualiza `backend/.env` con los valores definitivos que usarás en producción (`ALLOWED_ORIGINS=https://navidad-drab.vercel.app` y cualquier otra URL pública).
+
+2. **Construye la imagen y súbela a Artifact Registry / Container Registry**
+
+   Desde la raíz del proyecto (donde está la carpeta `backend/`):
+
+   ```bash
+   gcloud config set project TU_PROJECT_ID
+   gcloud builds submit --tag gcr.io/TU_PROJECT_ID/navidad-backend ./backend
+   ```
+
+3. **Despliega en Cloud Run**
+
+   ```bash
+   gcloud run deploy navidad-backend \
+     --image gcr.io/TU_PROJECT_ID/navidad-backend \
+     --region=us-central1 \
+     --allow-unauthenticated \
+     --set-env-vars CALENDAR_ID=primary,TIMEZONE=America/Mexico_City,START_HOUR=9,END_HOUR=18,SLOT_DURATION_MINUTES=30,BUFFER_MINUTES=5,ALLOWED_ORIGINS=https://navidad-drab.vercel.app
+   ```
+
+   Ajusta los valores según tus necesidades. Cloud Run asignará automáticamente el puerto en `PORT`, que Express ya respeta.
+
+4. **Completa el flujo de autorización en producción**
+
+   Una vez desplegado, visita `https://TU-SERVICIO.run.app/authorize` (usa la URL que te entrega Cloud Run) y otorga acceso para que se genere un nuevo `token.json` dentro del contenedor. Si en el futuro necesitas renovar el token, repite este paso y vuelve a publicar la imagen con el archivo actualizado.
+
+5. **Apunta la landing al backend en la nube**
+
+   En Vercel (o donde hospedes el frontend), define la variable `VITE_API_URL=https://TU-SERVICIO.run.app/api`. Redeploya la landing para que use la nueva URL.
+
+> **Importante:** La imagen de Cloud Run contendrá `credentials.json` y `token.json`. Mantén tu registro privado y rota las credenciales si sospechas que se filtraron. Para una solución más avanzada, puedes almacenar estos archivos en Secret Manager y montarlos como volúmenes en Cloud Run.

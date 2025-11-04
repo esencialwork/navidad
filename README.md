@@ -68,6 +68,27 @@ El directorio `backend/` expone un servidor Express que se integra con Google Ca
 
 5. El frontend consume la API vía `VITE_API_URL` (añade `VITE_API_URL=http://localhost:3000/api` a tu `.env` en la raíz si cambias el puerto o despliegas el backend en otra URL).
 
+### Despliegue del backend en Google Cloud Run
+
+1. Autoriza localmente para generar `backend/token.json` (mantén también `backend/credentials.json`).
+2. Construye la imagen desde la carpeta raíz:
+
+   ```bash
+   gcloud builds submit --tag gcr.io/TU_PROJECT_ID/navidad-backend ./backend
+   ```
+
+3. Despliega:
+
+   ```bash
+   gcloud run deploy navidad-backend \
+     --image gcr.io/TU_PROJECT_ID/navidad-backend \
+     --region=us-central1 \
+     --allow-unauthenticated \
+     --set-env-vars CALENDAR_ID=primary,TIMEZONE=America/Mexico_City,ALLOWED_ORIGINS=https://navidad-drab.vercel.app
+   ```
+
+4. Completa `https://TU-SERVICIO.run.app/authorize` para vincular Google Calendar y luego define `VITE_API_URL=https://TU-SERVICIO.run.app/api` en Vercel.
+
 ## Personalización
 
 - Puedes modificar los textos, precios y cantidad de fotos en `src/App.jsx` donde se definen los objetos de contenido.
