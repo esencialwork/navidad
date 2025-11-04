@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+build/
+dist/
+.vite/
+
+# Logs
+*.log
+backend/backend.log
+
+# Environment & secrets
+.env
+backend/credentials.json
+backend/token.json
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
