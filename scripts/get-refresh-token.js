@@ -10,7 +10,6 @@
  */
 
 const http = require('http');
-const open = require('open');
 const { google } = require('googleapis');
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -37,9 +36,16 @@ console.log('1) Abre la siguiente URL y otorga permisos:');
 console.log(authUrl);
 console.log('\nEsperando confirmación...');
 
-open(authUrl, { wait: false }).catch(() => {
-  // Si no se puede abrir automáticamente, el usuario puede hacerlo manualmente.
-});
+async function maybeOpenBrowser(url) {
+  try {
+    const openModule = await import('open');
+    await openModule.default(url, { wait: false });
+  } catch (error) {
+    console.warn('No se pudo abrir el navegador automáticamente. Copia la URL manualmente.');
+  }
+}
+
+maybeOpenBrowser(authUrl);
 
 const server = http.createServer(async (req, res) => {
   if (!req.url.startsWith('/oauth2callback')) {

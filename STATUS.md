@@ -12,7 +12,7 @@ La lógica de reservas vive en funciones serverless dentro del directorio `api/`
 - `api/availability.js` genera los slots disponibles y respeta buffers configurable.
 - `api/reservations.js` valida el formulario, detecta conflictos y crea el evento en Google Calendar (enviando la invitación al asistente).
 
-El frontend (`src/components/ReservationForm.jsx`) consume estos endpoints mediante `src/lib/api.js`, que apunta a `/api`.
+El frontend (`src/components/ReservationForm.jsx`) consume estos endpoints mediante `src/lib/api.js`, que apunta a `/api`, e incluye casillas separadas para promociones, uso en portafolio y autorización de menores, alineadas con el nuevo aviso de privacidad.
 
 ## Último Error Encontrado
 

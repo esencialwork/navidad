@@ -26,6 +26,7 @@ export default function NavBar({ sectionIds = {} }) {
           <a href={`#${how}`} className="hover:text-primary">Cómo funciona</a>
           <a href={`#${testimonials}`} className="hover:text-primary">Testimonios</a>
           <a href={`#${faq}`} className="hover:text-primary">FAQ</a>
+          <a href="/aviso-de-privacidad" className="hover:text-primary">Aviso de privacidad</a>
           <a href={`#${reservation}`} className="ml-4 inline-flex items-center bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark transition-colors">
             Apartar mi lugar
           </a>
@@ -66,6 +67,7 @@ export default function NavBar({ sectionIds = {} }) {
             <a href={`#${how}`} className="block hover:text-primary" onClick={() => setIsOpen(false)}>Cómo funciona</a>
             <a href={`#${testimonials}`} className="block hover:text-primary" onClick={() => setIsOpen(false)}>Testimonios</a>
             <a href={`#${faq}`} className="block hover:text-primary" onClick={() => setIsOpen(false)}>FAQ</a>
+            <a href="/aviso-de-privacidad" className="block hover:text-primary" onClick={() => setIsOpen(false)}>Aviso de privacidad</a>
             <a href={`#${reservation}`} className="block mt-2 bg-primary text-white text-center px-4 py-2 rounded-md hover:bg-primary-dark" onClick={() => setIsOpen(false)}>
               Apartar mi lugar
             </a>

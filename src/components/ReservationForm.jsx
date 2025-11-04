@@ -6,7 +6,9 @@ const initialFormState = {
   email: '',
   phone: '',
   notes: '',
-  marketingConsent: false
+  promotionsOptIn: false,
+  portfolioConsent: false,
+  minorDataConsent: false
 };
 const PHONE_INPUT_PATTERN = '^\\+?[\\d\\s()\\-]{8,}$';
 
@@ -91,7 +93,9 @@ export default function ReservationForm({ sectionId = 'reserva' }) {
         email: formValues.email,
         phone: formValues.phone,
         notes: formValues.notes,
-        marketingConsent: formValues.marketingConsent,
+        promotionsOptIn: formValues.promotionsOptIn,
+        portfolioConsent: formValues.portfolioConsent,
+        minorDataConsent: formValues.minorDataConsent,
         slotStart: selectedSlot.start,
         slotEnd: selectedSlot.end
       });
@@ -242,16 +246,39 @@ export default function ReservationForm({ sectionId = 'reserva' }) {
                 placeholder="¿Algo que debamos saber?"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                id="marketingConsent"
-                type="checkbox"
-                checked={formValues.marketingConsent}
-                onChange={handleInputChange}
-                className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700 text-primary focus:ring-primary"
-              />
-              <label htmlFor="marketingConsent" className="text-sm">
-                Acepto el uso de mis imágenes con fines promocionales
+            <div className="space-y-2">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                Selecciona tus preferencias (opcionales):
+              </p>
+              <label htmlFor="promotionsOptIn" className="flex items-start gap-2 text-sm">
+                <input
+                  id="promotionsOptIn"
+                  type="checkbox"
+                  checked={formValues.promotionsOptIn}
+                  onChange={handleInputChange}
+                  className="mt-1 h-4 w-4 rounded border-neutral-300 dark:border-neutral-700 text-primary focus:ring-primary"
+                />
+                <span>Acepto recibir promociones y novedades.</span>
+              </label>
+              <label htmlFor="portfolioConsent" className="flex items-start gap-2 text-sm">
+                <input
+                  id="portfolioConsent"
+                  type="checkbox"
+                  checked={formValues.portfolioConsent}
+                  onChange={handleInputChange}
+                  className="mt-1 h-4 w-4 rounded border-neutral-300 dark:border-neutral-700 text-primary focus:ring-primary"
+                />
+                <span>Autorizo el uso de mi imagen en portafolio y redes del estudio.</span>
+              </label>
+              <label htmlFor="minorDataConsent" className="flex items-start gap-2 text-sm">
+                <input
+                  id="minorDataConsent"
+                  type="checkbox"
+                  checked={formValues.minorDataConsent}
+                  onChange={handleInputChange}
+                  className="mt-1 h-4 w-4 rounded border-neutral-300 dark:border-neutral-700 text-primary focus:ring-primary"
+                />
+                <span>Declaro que soy madre/padre/tutor y autorizo el tratamiento de datos e imagen de las personas menores que asisten.</span>
               </label>
             </div>
             {formMessage ? (
@@ -273,7 +300,12 @@ export default function ReservationForm({ sectionId = 'reserva' }) {
               {submitting ? 'Procesando…' : 'Confirmar cita'}
             </button>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Al hacer clic en “Pagar y confirmar” confirmas tu cita y recibirás los datos de pago.
+              Al confirmar aceptas el tratamiento de tus datos conforme al
+              {' '}
+              <a href="/aviso-de-privacidad" className="underline text-primary" target="_blank" rel="noreferrer">
+                Aviso de Privacidad
+              </a>
+              .
             </p>
           </form>
         </div>

@@ -30,7 +30,17 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: error.message });
   }
 
-  const { name, email, phone, notes, slotStart, slotEnd, marketingConsent } = payload || {};
+  const {
+    name,
+    email,
+    phone,
+    notes,
+    slotStart,
+    slotEnd,
+    promotionsOptIn = false,
+    portfolioConsent = false,
+    minorDataConsent = false
+  } = payload || {};
 
   if (!name || !email || !phone || !slotStart) {
     return res.status(400).json({ error: 'Faltan campos obligatorios: name, email, phone, slotStart.' });
@@ -72,7 +82,9 @@ module.exports = async function handler(req, res) {
       `Correo: ${email}`,
       `WhatsApp: ${phone}`,
       `Notas: ${notes || 'N/A'}`,
-      `Uso promocional aprobado: ${marketingConsent ? 'Sí' : 'No'}`
+      `Recibir promociones: ${promotionsOptIn ? 'Sí' : 'No'}`,
+      `Uso en portafolio/redes: ${portfolioConsent ? 'Sí' : 'No'}`,
+      `Menores autorizados: ${minorDataConsent ? 'Sí' : 'No'}`
     ].join('\n');
 
     const eventConfig = {
@@ -93,7 +105,9 @@ module.exports = async function handler(req, res) {
         private: {
           phone,
           notes: notes || '',
-          marketingConsent: marketingConsent ? 'true' : 'false'
+          promotionsOptIn: promotionsOptIn ? 'true' : 'false',
+          portfolioConsent: portfolioConsent ? 'true' : 'false',
+          minorDataConsent: minorDataConsent ? 'true' : 'false'
         }
       }
     };

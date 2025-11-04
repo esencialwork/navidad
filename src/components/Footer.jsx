@@ -23,6 +23,7 @@ export default function Footer({ sectionIds = {} }) {
           <a href={`#${how}`} className="hover:text-primary">Cómo funciona</a>
           <a href={`#${testimonials}`} className="hover:text-primary">Testimonios</a>
           <a href={`#${faq}`} className="hover:text-primary">FAQ</a>
+          <a href="/aviso-de-privacidad" className="hover:text-primary">Aviso de privacidad</a>
         </nav>
       </div>
       <div className="mt-6 text-center text-xs text-neutral-500">
