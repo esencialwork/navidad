@@ -40,55 +40,19 @@ Este repositorio contiene una landing page responsiva para promocionar sesiones 
 
 ### Backend (Google Calendar)
 
-El directorio `backend/` expone un servidor Express que se integra con Google Calendar para consultar disponibilidad y crear eventos.
+El proyecto ya no necesita un backend separado: las funciones de reserva viven en `api/` y se ejecutan como Serverless Functions en Vercel.
 
-1. Instala dependencias y crea un archivo `.env`:
+1. **Crea una service account** (Google Cloud → IAM → Service Accounts) y descarga su JSON.
+2. **Comparte tu calendario** con el correo de la service account con permisos de “Hacer cambios y administrar uso compartido”.
+3. **Variables de entorno necesarias** (en Vercel → Settings → Environment Variables):
+   - `GOOGLE_SERVICE_ACCOUNT_JSON` – pega el JSON completo de la service account (respeta comillas y saltos con `\n`).
+   - `CALENDAR_ID` – ID del calendario destino (`primary` o el ID específico).
+   - `TIMEZONE`, `START_HOUR`, `END_HOUR`, `SLOT_DURATION_MINUTES`, `BUFFER_MINUTES` (opcional, tienen valores por defecto).
+   - `VITE_API_URL=/api` (o deja el valor por defecto del `.env.example`).
+   - Opcional: `GOOGLE_IMPERSONATED_USER` si quieres que la service account actúe como un usuario de Google Workspace.
+4. **Redeploy** en Vercel. Las rutas `/api/availability`, `/api/reservations` y `/api/status` se ejecutan con esas variables y crean eventos directamente en Google Calendar.
 
-   ```bash
-   cd backend
-   npm install
-   cp .env.example .env   # ajusta los valores según tu calendario
-   ```
-
-2. Variables principales:
-
-   - `CALENDAR_ID` – ID del calendario donde se crearán las sesiones (usa `primary` para el calendario principal).
-   - `TIMEZONE` – Zona horaria de las sesiones, por defecto `America/Mexico_City`.
-   - `ALLOWED_ORIGINS` – Lista separada por comas de orígenes permitidos para CORS (por ejemplo `http://localhost:5173`).
-   - `SLOT_DURATION_MINUTES`, `START_HOUR`, `END_HOUR`, `BUFFER_MINUTES` – Ajustan la lógica de horarios disponibles.
-   - `GOOGLE_SERVICE_ACCOUNT_JSON` – pega aquí el JSON de tu service account, o deja vacío y coloca `service-account.json` en `backend/`.
-
-3. En Google Calendar comparte tu calendario con el correo de la service account (`…@…gserviceaccount.com`) con permisos de edición.
-
-4. Inicia el backend:
-
-   ```bash
-   npm start
-   # verifica http://localhost:3000/api/status -> authorized: true
-   ```
-
-5. El frontend consume la API vía `VITE_API_URL` (añade `VITE_API_URL=http://localhost:3000/api` a tu `.env` en la raíz si cambias el puerto o despliegas el backend en otra URL).
-
-### Despliegue del backend en Google Cloud Run
-
-1. Asegúrate de tener el JSON de la service account y las variables (`CALENDAR_ID`, `ALLOWED_ORIGINS`, etc.).
-2. Construye la imagen desde la carpeta raíz:
-
-   ```bash
-   gcloud builds submit --tag gcr.io/TU_PROJECT_ID/navidad-backend ./backend
-   ```
-
-3. Despliega:
-
-   ```bash
-   gcloud run deploy navidad-backend \
-     --image gcr.io/TU_PROJECT_ID/navidad-backend \
-     --region=us-central1 \
-     --allow-unauthenticated \
-     --set-env-vars CALENDAR_ID=primary,TIMEZONE=America/Mexico_City,ALLOWED_ORIGINS=https://navidad-drab.vercel.app,GOOGLE_SERVICE_ACCOUNT_JSON="$(cat backend/service-account.json)"
-   ```
-
-4. Define `VITE_API_URL=https://TU-SERVICIO.run.app/api` en Vercel para que el frontend use el backend desplegado.
+> Para probar en local usa `vercel dev` (requiere `npm i -g vercel`). Exporta las mismas variables de entorno antes de ejecutar.
 
 ## Personalización
 

@@ -6,12 +6,10 @@ dist/
 
 # Logs
 *.log
-backend/backend.log
 
 # Environment & secrets
 .env
-backend/credentials.json
-backend/token.json
+service-account.json
 
 # macOS
 .DS_Store

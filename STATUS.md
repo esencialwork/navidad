@@ -6,18 +6,13 @@ El objetivo es implementar un sistema de reservas para un sitio web de sesiones 
 
 ## Estado Actual
 
-Se ha creado un servidor backend utilizando Node.js y Express (directorio `backend/`) que se integra con Google Calendar. El backend ahora:
+La lógica de reservas ahora vive directamente en funciones serverless dentro del directorio `api/` (compatibles con Vercel). Cada función usa una **service account** de Google para interactuar con el calendario sin necesidad de flujos OAuth interactivos.
 
-- Gestiona el flujo OAuth y persiste el token en `token.json`.
-- Expone endpoints REST en `/api`:
-  - `GET /api/status` para comprobar la autorización.
-  - `GET /api/availability?date=YYYY-MM-DD` para obtener horarios disponibles.
-  - `POST /api/reservations` para crear una cita en Google Calendar.
-- Calcula los horarios usando los parámetros configurables (`START_HOUR`, `END_HOUR`, `SLOT_DURATION_MINUTES`, `BUFFER_MINUTES`) y respeta la zona horaria.
+- `api/status.js` confirma que la cuenta de servicio puede autenticarse y expone parámetros básicos del calendario.
+- `api/availability.js` genera los slots disponibles para la fecha solicitada y filtra los horarios ocupados con buffers configurables.
+- `api/reservations.js` valida el formulario, comprueba conflictos y crea el evento en Google Calendar enviando invitaciones al cliente.
 
-El usuario debe contar con `credentials.json` válido y completar `/authorize` al menos una vez para generar `token.json`.
-
-En el frontend (`src/components/ReservationForm.jsx`) se habilitó la consulta dinámica de disponibilidad y la creación de reservas mediante llamadas al backend (`src/lib/api.js`). El formulario actualiza la lista de horarios al seleccionar fecha o tras confirmar una cita.
+El frontend (`src/components/ReservationForm.jsx`) consume estos endpoints a través de `src/lib/api.js`, que ahora apunta por defecto a `/api`.
 
 ## Último Error Encontrado
 
@@ -25,10 +20,10 @@ Se verificó que la aplicación frontend ahora se monta correctamente con React 
 
 ## Próximos Pasos
 
-1.  **Completar autorización OAuth en entornos nuevos:** Verificar que `credentials.json` existe, iniciar el backend y visitar `/authorize` para generar `token.json`.
+1.  **Cargar la service account en Vercel:** Pegar `GOOGLE_SERVICE_ACCOUNT_JSON` y compartir el calendario con ese correo para habilitar la escritura de eventos.
 
-2.  **Configurar variables de entorno:** Ajustar `.env` en `backend/` (ID de calendario, zona horaria, orígenes permitidos) y `VITE_API_URL` en el frontend según el entorno de despliegue.
+2.  **Ajustar variables de entorno opcionales:** `CALENDAR_ID`, horarios y buffers según la agenda real.
 
-3.  **Agregar validaciones adicionales (opcional):** Considerar captcha, doble confirmación por correo o pagos en línea si se requieren.
+3.  **Validaciones extra (opcional):** Captcha, pagos o recordatorios adicionales.
 
-4.  **Monitorear errores y cierres de sesión:** Añadir alertas/logs para detectar expiración de tokens o conflictos frecuentes.
+4.  **Monitorear errores:** Revisar los logs de Vercel ante conflictos o respuestas 503 para asegurarse de que la cuenta de servicio mantiene los permisos.
