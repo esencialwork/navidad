@@ -56,21 +56,22 @@ El directorio `backend/` expone un servidor Express que se integra con Google Ca
    - `TIMEZONE` – Zona horaria de las sesiones, por defecto `America/Mexico_City`.
    - `ALLOWED_ORIGINS` – Lista separada por comas de orígenes permitidos para CORS (por ejemplo `http://localhost:5173`).
    - `SLOT_DURATION_MINUTES`, `START_HOUR`, `END_HOUR`, `BUFFER_MINUTES` – Ajustan la lógica de horarios disponibles.
+   - `GOOGLE_SERVICE_ACCOUNT_JSON` – pega aquí el JSON de tu service account, o deja vacío y coloca `service-account.json` en `backend/`.
 
-3. Coloca las credenciales OAuth descargadas de Google Cloud en `backend/credentials.json` (el archivo ya está en `.gitignore`).
+3. En Google Calendar comparte tu calendario con el correo de la service account (`…@…gserviceaccount.com`) con permisos de edición.
 
-4. Inicia el backend y completa el flujo de autorización:
+4. Inicia el backend:
 
    ```bash
    npm start
-   # luego abre http://localhost:3000/authorize y sigue las instrucciones
+   # verifica http://localhost:3000/api/status -> authorized: true
    ```
 
 5. El frontend consume la API vía `VITE_API_URL` (añade `VITE_API_URL=http://localhost:3000/api` a tu `.env` en la raíz si cambias el puerto o despliegas el backend en otra URL).
 
 ### Despliegue del backend en Google Cloud Run
 
-1. Autoriza localmente para generar `backend/token.json` (mantén también `backend/credentials.json`).
+1. Asegúrate de tener el JSON de la service account y las variables (`CALENDAR_ID`, `ALLOWED_ORIGINS`, etc.).
 2. Construye la imagen desde la carpeta raíz:
 
    ```bash
@@ -84,10 +85,10 @@ El directorio `backend/` expone un servidor Express que se integra con Google Ca
      --image gcr.io/TU_PROJECT_ID/navidad-backend \
      --region=us-central1 \
      --allow-unauthenticated \
-     --set-env-vars CALENDAR_ID=primary,TIMEZONE=America/Mexico_City,ALLOWED_ORIGINS=https://navidad-drab.vercel.app
+     --set-env-vars CALENDAR_ID=primary,TIMEZONE=America/Mexico_City,ALLOWED_ORIGINS=https://navidad-drab.vercel.app,GOOGLE_SERVICE_ACCOUNT_JSON="$(cat backend/service-account.json)"
    ```
 
-4. Completa `https://TU-SERVICIO.run.app/authorize` para vincular Google Calendar y luego define `VITE_API_URL=https://TU-SERVICIO.run.app/api` en Vercel.
+4. Define `VITE_API_URL=https://TU-SERVICIO.run.app/api` en Vercel para que el frontend use el backend desplegado.
 
 ## Personalización
 

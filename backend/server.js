@@ -12,12 +12,11 @@ const port = Number(process.env.PORT) || 3000;
 
 console.log('Express app created');
 
-// Paths to local credential storage
-const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
-const TOKEN_PATH = path.join(__dirname, 'token.json');
+// Paths to local credential storage (fallback)
+const SERVICE_ACCOUNT_PATH = path.join(__dirname, 'service-account.json');
 
 // Scopes required for the application
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/calendar.events'];
+const SCOPES = ['https://www.googleapis.com/auth/calendar'];
 
 const CALENDAR_ID = process.env.CALENDAR_ID || 'primary';
 const TIMEZONE = process.env.TIMEZONE || 'America/Mexico_City';
@@ -26,8 +25,8 @@ const START_HOUR = Number(process.env.START_HOUR || 9);
 const END_HOUR = Number(process.env.END_HOUR || 18);
 const BUFFER_MINUTES = Number(process.env.BUFFER_MINUTES || 5);
 
-let oauth2Client;
-let token;
+let authClient;
+let authReady = false;
 
 function normalizeOrigin(origin) {
   if (!origin) {
@@ -62,85 +61,55 @@ app.use(cors({
 
 app.use(express.json());
 
-console.log(`Credentials path: ${CREDENTIALS_PATH}`);
-console.log(`Token path: ${TOKEN_PATH}`);
+console.log(`Service account fallback path: ${SERVICE_ACCOUNT_PATH}`);
 
-function loadCredentials() {
+function loadServiceAccount() {
   let config;
-  if (process.env.GOOGLE_CREDENTIALS_JSON) {
-    console.log('Loading credentials from environment variable GOOGLE_CREDENTIALS_JSON');
-    config = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    console.log('Loading service account from GOOGLE_SERVICE_ACCOUNT_JSON');
+    config = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   } else {
-    console.log('Reading credentials file...');
-    const content = fs.readFileSync(CREDENTIALS_PATH, 'utf8');
-    console.log('Credentials file read successfully');
+    console.log('Reading service-account.json from disk...');
+    const content = fs.readFileSync(SERVICE_ACCOUNT_PATH, 'utf8');
     config = JSON.parse(content);
   }
-  const webCredentials = config.web;
-  if (!webCredentials) {
-    throw new Error('Archivo de credenciales inválido: falta la propiedad "web".');
+
+  const { client_email: clientEmail, private_key: privateKey } = config;
+  if (!clientEmail || !privateKey) {
+    throw new Error('El JSON de la service account debe incluir client_email y private_key.');
   }
 
-  const {
-    client_secret: clientSecret,
-    client_id: clientId,
-    redirect_uris: redirectUris = [],
-    javascript_origins: javascriptOrigins = []
-  } = webCredentials;
+  const formattedKey = privateKey.includes('\\n') ? privateKey.replace(/\\n/g, '\n') : privateKey;
 
-  const fallbackOrigin = javascriptOrigins[0];
-  const redirectUri = process.env.REDIRECT_URI || redirectUris[0] || (fallbackOrigin ? `${fallbackOrigin.replace(/\/$/, '')}/oauth2callback` : null);
-
-  if (!clientSecret || !clientId || !redirectUri) {
-    throw new Error('Credenciales incompletas: verifica client_id, client_secret y redirect URIs.');
-  }
-
-  oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
-  console.log(`OAuth2 client created with redirect URI: ${redirectUri}`);
+  authClient = new google.auth.JWT({
+    email: clientEmail,
+    key: formattedKey,
+    scopes: SCOPES,
+    subject: process.env.GOOGLE_IMPERSONATED_USER || undefined
+  });
+  console.log(`Service account loaded for ${clientEmail}`);
 }
 
-function loadTokenFromDisk() {
-  if (process.env.GOOGLE_TOKEN_JSON) {
-    try {
-      const storedToken = JSON.parse(process.env.GOOGLE_TOKEN_JSON);
-      oauth2Client.setCredentials(storedToken);
-      token = storedToken;
-      console.log('Token loaded from GOOGLE_TOKEN_JSON environment variable');
-      return;
-    } catch (error) {
-      console.warn('Failed to parse GOOGLE_TOKEN_JSON. Falling back to token.json if available.', error);
-    }
+async function ensureAuthorized() {
+  if (!authClient) {
+    throw new Error('Service account client not initialized.');
   }
-  if (fs.existsSync(TOKEN_PATH)) {
-    try {
-      const storedToken = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf8'));
-      oauth2Client.setCredentials(storedToken);
-      token = storedToken;
-      console.log('Token loaded from disk and applied to OAuth2 client');
-    } catch (error) {
-      console.warn('Failed to parse token.json. Delete the file and re-authorize if the issue persists.', error);
-    }
-  } else {
-    console.log('token.json not found. The /authorize flow must be completed.');
+  if (authReady) {
+    return;
   }
-}
-
-function saveTokenToDisk(tokens) {
-  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens, null, 2), 'utf8');
-  console.log('Token saved to disk');
-  if (process.env.GOOGLE_TOKEN_JSON) {
-    console.log('Actualiza GOOGLE_TOKEN_JSON en tu entorno con el nuevo contenido de token.json si quieres persistirlo.');
-  }
+  await authClient.authorize();
+  authReady = true;
+  console.log('Service account authorized successfully');
 }
 
 function isAuthorized() {
-  return Boolean(oauth2Client && oauth2Client.credentials && (oauth2Client.credentials.access_token || oauth2Client.credentials.refresh_token));
+  return Boolean(authReady);
 }
 
 function getCalendarClient() {
   return google.calendar({
     version: 'v3',
-    auth: oauth2Client
+    auth: authClient
   });
 }
 
@@ -226,53 +195,14 @@ function normalizeEventTime(event) {
   return null;
 }
 
-try {
-  loadCredentials();
-  loadTokenFromDisk();
-} catch (err) {
-  console.log('Error setting up Google OAuth client:', err);
-  process.exit(1);
-}
-
-app.get('/', (req, res) => {
-  res.send('Backend operativo. Usa /authorize para vincular Google Calendar o /api/status para ver el estado.');
-});
-
-// Route to start the OAuth 2.0 flow
-app.get('/authorize', (req, res) => {
-  if (!oauth2Client) {
-    console.log('OAuth2 client not initialized');
-    return res.status(500).send('OAuth2 client not initialized');
-  }
-  const authUrl = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES,
-    prompt: 'consent'
-  });
-  console.log(`Generated auth URL: ${authUrl}`);
-  res.redirect(authUrl);
-});
-
-// Route to handle the OAuth 2.0 callback
-app.get('/oauth2callback', async (req, res) => {
-  const code = req.query.code;
-  if (!code) {
-    console.log('Missing code in callback');
-    return res.status(400).send('Missing code');
-  }
-  console.log('Authorization code received. Exchanging for tokens...');
+(async () => {
   try {
-    const { tokens } = await oauth2Client.getToken(code);
-    token = tokens;
-    oauth2Client.setCredentials(token);
-    saveTokenToDisk(tokens);
-    console.log('Token obtained and set successfully');
-    res.send('¡Autorización exitosa! Puedes cerrar esta pestaña.');
-  } catch (error) {
-    console.error('Error getting token', error);
-    res.status(500).send('Error getting token');
+    loadServiceAccount();
+    await ensureAuthorized();
+  } catch (err) {
+    console.log('Error setting up Google service account client:', err);
   }
-});
+})();
 
 app.get('/api/status', (req, res) => {
   res.json({
@@ -281,13 +211,22 @@ app.get('/api/status', (req, res) => {
     timezone: TIMEZONE,
     slotDurationMinutes: SLOT_DURATION_MINUTES,
     startHour: START_HOUR,
-    endHour: END_HOUR
+    endHour: END_HOUR,
+    usingServiceAccount: true
   });
 });
 
 app.get('/api/availability', async (req, res) => {
   if (!isAuthorized()) {
-    return res.status(503).json({ error: 'Google Calendar no está autorizado. Visita /authorize.' });
+    return res.status(503).json({ error: 'Google Calendar no está autorizado. Verifica la service account.' });
+  }
+
+  try {
+    await ensureAuthorized();
+  } catch (error) {
+    console.error('Error ensuring authorization', error);
+    authReady = false;
+    return res.status(503).json({ error: 'No se pudo autorizar la service account.' });
   }
 
   const date = req.query.date;
@@ -359,7 +298,15 @@ app.get('/api/availability', async (req, res) => {
 
 app.post('/api/reservations', async (req, res) => {
   if (!isAuthorized()) {
-    return res.status(503).json({ error: 'Google Calendar no está autorizado. Visita /authorize.' });
+    return res.status(503).json({ error: 'Google Calendar no está autorizado. Verifica la service account.' });
+  }
+
+  try {
+    await ensureAuthorized();
+  } catch (error) {
+    console.error('Error ensuring authorization', error);
+    authReady = false;
+    return res.status(503).json({ error: 'No se pudo autorizar la service account.' });
   }
 
   const { name, email, phone, notes, slotStart, slotEnd, marketingConsent } = req.body || {};
@@ -450,5 +397,4 @@ app.post('/api/reservations', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);
-  console.log(`Go to http://localhost:${port}/authorize to authenticate with Google if you have not already.`);
 });
