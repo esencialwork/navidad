@@ -38,10 +38,10 @@ export default function Hero({
             {ctaText}
           </a>
 
-          {deadline ? (
+          {deadline && isCampaignActive ? (
             <div className="mt-6">
               <p className="mb-2 text-sm font-medium">
-                {isCampaignActive ? countdownLabel : 'Promoción finalizada'}
+                {countdownLabel}
               </p>
               <Countdown deadline={deadline} />
               <p className="mt-2 text-[11px] text-white/70">Horario local {timeZoneLabel}</p>

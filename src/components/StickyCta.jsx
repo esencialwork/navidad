@@ -22,7 +22,7 @@ export default function StickyCta({
           <div className="text-neutral-600 dark:text-neutral-400 text-xs">{isCampaignActive ? 'Cupos limitados' : 'Reserva sujeta a disponibilidad'}</div>
         </div>
         <a href={ctaTarget} className="inline-flex items-center rounded-md px-4 py-2 bg-primary text-white font-medium">
-          {isCampaignActive ? 'Apartar mi lugar' : 'Reservar'}
+          {isCampaignActive ? `Apartar mi lugar por ${priceLabel}` : 'Reservar'}
         </a>
       </div>
     </div>

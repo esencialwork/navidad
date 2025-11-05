@@ -5,12 +5,10 @@ import React from 'react';
  */
 export default function TopBanner({
   isCampaignActive,
-  campaignPrice,
   regularPrice,
-  campaignName,
   ctaTarget = '#reserva'
 }) {
-  const activeMessage = `🎄 ${campaignName}: sesiones navideñas a $${campaignPrice.toLocaleString('es-MX')} MXN. Termina pronto.`;
+  const activeMessage = '🎄 Magia de Noviembre: sesiones navideñas a $2,500 MXN. Termina el 17/11.';
   const endedMessage = `🎄 Promoción finalizada — Precio regular $${regularPrice.toLocaleString('es-MX')} MXN.`;
 
   return (

@@ -21,7 +21,10 @@ import {
   CheckCircle,
   RefreshCcw,
   Timer,
-  ShieldCheck
+  ShieldCheck,
+  Users,
+  PawPrint,
+  Printer
 } from 'lucide-react';
 import {
   CAMPAIGN_NAME,
@@ -53,29 +56,49 @@ export default function App() {
     ? `🎄 ${CAMPAIGN_NAME} — Cupos limitados — ${priceLabel}`
     : '🎄 Promoción finalizada — Consulta nuevas fechas';
 
-  const legalText = 'Vigencia: precio promocional de $2,500 MXN válido solo para reservas confirmadas antes del cierre de nuestra campaña especial de noviembre. No acumulable con otras promociones. Aplica a sesiones navideñas 2025 en Querétaro. Sujeto a disponibilidad.';
+  const legalText = 'Vigencia: precio promocional de $2,500 MXN válido para reservas confirmadas antes del 17 de noviembre de 2025 a las 23:59 h (hora de Querétaro). No acumulable con otras promociones. Sujeto a disponibilidad. Desde el 18/11/2025 aplica el precio regular de $2,900 MXN.';
 
   // Content definitions
   const incluyeFeatures = [
     {
       icon: Clock,
-      title: 'Sesión de 20–25 min',
-      text: 'Tiempo exclusivo por familia en un set auténtico navideño.'
+      title: 'Sesión de máximo 40 minutos',
+      text: 'Tiempo suficiente para retratar a tu familia en diferentes poses y escenarios navideños.'
     },
     {
       icon: Camera,
-      title: '8 fotos digitales',
-      text: 'Ocho fotografías editadas profesionalmente en alta resolución.'
+      title: '10 fotos digitales editadas',
+      text: 'Recibe diez fotografías en alta resolución con retoque profesional.'
+    },
+    {
+      icon: Timer,
+      title: 'Entrega en máximo 48 horas',
+      text: 'Tu galería estará lista para descargar en dos días o menos.'
     },
     {
       icon: ImageIcon,
-      title: 'Galería privada',
-      text: 'Elige tus favoritas en línea desde la comodidad de tu casa.'
+      title: 'Galería privada por 15 días',
+      text: 'Accede y selecciona tus favoritas desde un enlace seguro disponible durante dos semanas.'
     },
     {
-      icon: Truck,
-      title: 'Entrega rápida',
-      text: 'Selección en 48–72 h y galería final en máximo 7 días.'
+      icon: Users,
+      title: 'Hasta 5 personas por sesión',
+      text: 'Ideal para familias. Persona extra $350 MXN.'
+    },
+    {
+      icon: PawPrint,
+      title: 'Somos pet friendly',
+      text: 'Hasta 2 perritos incluidos. Perrito extra $250 MXN.'
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Set navideño real',
+      text: 'Ambientación premium para crear recuerdos memorables.'
+    },
+    {
+      icon: Printer,
+      title: 'Impresiones al momento (extra)',
+      text: 'Paquete de 10 fotos impresas por $290 MXN durante tu sesión.'
     }
   ];
 
@@ -134,24 +157,40 @@ export default function App() {
 
   const faqItems = [
     {
-      q: '¿Cuántas personas por sesión?',
-      a: 'Una familia/núcleo. Consulta costo por personas extra.'
+      q: '¿Cuánto dura la sesión?',
+      a: 'Máximo 40 minutos.'
     },
     {
-      q: '¿Puedo comprar fotos adicionales?',
-      a: 'Sí: +5 por $600 MXN o +10 por $1,000 MXN.'
+      q: '¿Cuántas fotos incluye?',
+      a: '10 fotos digitales editadas en alta resolución.'
+    },
+    {
+      q: '¿En cuánto tiempo entregan?',
+      a: 'En máximo 48 horas.'
+    },
+    {
+      q: '¿Cuánto tiempo estará disponible mi galería?',
+      a: '15 días.'
+    },
+    {
+      q: '¿Cuántas personas pueden asistir?',
+      a: 'Hasta 5 personas; persona extra $350.'
     },
     {
       q: '¿Se permiten mascotas?',
-      a: '¡Por supuesto! somos totalmente Petfriendly 🐶 🐾 .'
+      a: 'Sí, somos pet friendly. Hasta 2 perritos; perrito extra $250.'
     },
     {
       q: '¿Incluye impresiones?',
-      a: 'No. Puedes adquirir impresiones y mini-álbum como extra.'
+      a: 'No.'
     },
     {
-      q: '¿Hasta cuándo aplica el precio?',
-      a: 'Hasta el cierre de nuestra campaña especial de noviembre (23:59 h, hora de Querétaro).'
+      q: '¿Puedo adquirir impresiones?',
+      a: 'Sí, impresiones al momento: paquete de 10 fotos por $290.'
+    },
+    {
+      q: '¿Puedo comprar fotos adicionales?',
+      a: 'Sí, se pueden adquirir desde la galería una vez que recibas tus fotos.'
     }
   ];
 
@@ -160,9 +199,7 @@ export default function App() {
       <Snowfall />
       <TopBanner
         isCampaignActive={campaignActive}
-        campaignPrice={CAMPAIGN_PRICE}
         regularPrice={REGULAR_PRICE}
-        campaignName={CAMPAIGN_NAME}
         ctaTarget={`#${sectionIds.reservation}`}
       />
       <NavBar

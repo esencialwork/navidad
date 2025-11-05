@@ -1,11 +1,14 @@
 import React from 'react';
 
 const BENEFITS = [
-  '20–25 min de sesión',
-  '8 fotos editadas',
-  'Galería privada',
-  'Set navideño real',
-  'Entrega en 7 días'
+  'Sesión de máximo 40 minutos',
+  '10 fotos digitales editadas en alta resolución',
+  'Entrega en máximo 48 horas',
+  'Galería privada activa por 15 días',
+  'Máximo 5 personas (persona extra: $350)',
+  'Hasta 2 perritos incluidos (perrito extra: $250)',
+  'Somos pet friendly',
+  'Impresiones al momento (opcional): paquete de 10 fotos por $290'
 ];
 
 /**
@@ -25,7 +28,7 @@ export default function PricingSection({
   const heading = isCampaignActive ? 'Paquete Magia de Noviembre' : 'Sesiones navideñas 2025';
   const ctaText = isCampaignActive ? `Apartar mi lugar por ${priceLabel}` : 'Reservar mi sesión';
   const helperText = isCampaignActive
-    ? `Precio especial vigente hasta el cierre de nuestra campaña de noviembre.`
+    ? 'Campaña especial de noviembre — cupos limitados.'
     : `Precio regular vigente ${regularPriceLabel}.`;
 
   return (
